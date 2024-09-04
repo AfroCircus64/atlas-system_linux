@@ -28,7 +28,7 @@ Car *newCar(int id)
 Car *insertCar(Car *node, int id)
 {
 	if (node == NULL) {
-		printf("Car %d has joined the race\n", id);
+		printf("Car %d joined the race\n", id);
         node = newCar(id);
         return node;
     }
