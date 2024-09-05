@@ -7,6 +7,7 @@ static Car *root;
 /**
  * newCar - creates a new car
  * @id: id of the car
+ * Return: new car
  */
 
 Car *newCar(int id)
@@ -24,6 +25,7 @@ Car *newCar(int id)
  * insertCar - inserts car into the race
  * @node: node
  * @id: id of the car
+ * Return: node
  */
 
 Car *insertCar(Car *node, int id)
@@ -67,7 +69,7 @@ void print_race_state(Car *node)
 }
 
 /**
- * freeCar - will free memory
+ * free_car - will free memory
  * @node: node
  */
 
