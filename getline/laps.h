@@ -12,11 +12,12 @@
  * @right: pointer to right node
  */
 
-typedef struct Car {
-    int id;
-    int laps;
-    struct Car *left;
-    struct Car *right;
+typedef struct Car
+{
+	int id;
+	int laps;
+	struct Car *left;
+	struct Car *right;
 } Car;
 
 void print_race_state(Car *node);

@@ -12,6 +12,7 @@ static Car *root;
 Car *newCar(int id)
 {
 	Car *car = malloc(sizeof(Car));
+
 	car->id = id;
 	car->laps = 0;
 	car->left = NULL;
@@ -32,7 +33,7 @@ Car *insertCar(Car *node, int id)
 		printf("Car %d joined the race\n", id);
 		node = newCar(id);
 		return (node);
-    }
+	}
 
 	if (id < node->id)
 	{
@@ -100,6 +101,7 @@ void race_state(int *id, size_t size)
 	{
 		int car_id = id[i];
 		Car *new_car = insertCar(root, car_id);
+
 		root = new_car;
 	}
 
