@@ -16,10 +16,13 @@ char *_getline(const int fd)
 
     while (1)
     {
-        char *newline = memchr(buffer + buf_pos, '\n', buf_len - buf_pos);
-        if (newline)
+        size_t newline = buf_len;
+
+		for (; newline > buf_pos && buffer[newline] != '\n'; --newline) {}
+
+        if (newline > buf_pos)
         {
-            size_t len = newline - buffer - buf_pos;
+            size_t len = newline - buf_pos;
 
             line = malloc(len + 1);
             if (!line)
@@ -28,8 +31,8 @@ char *_getline(const int fd)
             memcpy(line, buffer + buf_pos, len);
             line[len] = '\0';
 
-            memmove(buffer, newline + 1, buf_len - (newline - buffer));
-            buf_len -= (newline - buffer) + 1;
+            memmove(buffer, buffer + newline, buf_len - newline);
+            buf_len -= (newline - buf_pos);
             buf_pos = 0;
 
             break;
