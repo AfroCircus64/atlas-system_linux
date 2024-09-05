@@ -31,7 +31,11 @@ char *_getline(const int fd)
             memcpy(line, buffer + buf_pos, len);
             line[len] = '\0';
 
-            memmove(buffer, buffer + newline, buf_len - newline);
+            for (size_t i = 0; i < buf_len - newline; ++i)
+			{
+				buffer[i] = buffer[buf_len - newline + i];
+			}
+
             buf_len -= (newline - buf_pos);
             buf_pos = 0;
 
