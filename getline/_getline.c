@@ -61,9 +61,9 @@ char *_getline(const int fd)
             break;
         }
 
-        if (buf_len == buf_pos || buf_len == READ_SIZE)
+        if (buf_len[fd] == buf_pos[fd] || buf_len[fd] == READ_SIZE)
         {
-            buf_len[fd] = read(fd, buffer, READ_SIZE);
+            buf_len[fd] = read(fd, buffer[fd], READ_SIZE);
             if (buf_len[fd] <= 0)
 			{
                 return (NULL);
