@@ -1,0 +1,48 @@
+#include "_getline.h"
+#include <unistd.h>
+
+static char buffer[READ_SIZE];
+static size_t buf_pos = 0;
+static size_t buf_len = 0;
+
+/**
+ * _getline - reads an entire line from a file descriptor
+ * @fd: file descriptor to read from
+ * Return: pointer to the read line or NULL
+ */
+char *_getline(const int fd)
+{
+    char *line = NULL;
+
+    while (1)
+    {
+        char *newline = memchr(buffer + buf_pos, '\n', buf_len - buf_pos);
+        if (newline)
+        {
+            size_t len = newline - buffer - buf_pos;
+
+            line = malloc(len + 1);
+            if (!line)
+                return (NULL);
+
+            memcpy(line, buffer + buf_pos, len);
+            line[len] = '\0';
+
+            memmove(buffer, newline + 1, buf_len - (newline - buffer));
+            buf_len -= (newline - buffer) + 1;
+            buf_pos = 0;
+
+            break;
+        }
+
+        if (buf_len == buf_pos || buf_len == READ_SIZE)
+        {
+            buf_len = read(fd, buffer, READ_SIZE);
+            if (buf_len <= 0)
+                return (NULL);
+            buf_pos = 0;
+        }
+    }
+
+    return (line);
+}
