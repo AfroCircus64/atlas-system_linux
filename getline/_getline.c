@@ -26,7 +26,9 @@ char *_getline(const int fd)
 
             line = malloc(len + 1);
             if (!line)
+			{
                 return (NULL);
+			}
 
             memcpy(line, buffer + buf_pos, len);
             line[len] = '\0';
@@ -36,7 +38,7 @@ char *_getline(const int fd)
 				buffer[i] = buffer[buf_len - newline + i];
 			}
 
-            buf_len -= (newline - buf_pos);
+            buf_len -= newline - buf_pos;
             buf_pos = 0;
 
             break;
@@ -46,7 +48,9 @@ char *_getline(const int fd)
         {
             buf_len = read(fd, buffer, READ_SIZE);
             if (buf_len <= 0)
+			{
                 return (NULL);
+			}
             buf_pos = 0;
         }
     }
