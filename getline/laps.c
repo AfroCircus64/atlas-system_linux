@@ -12,11 +12,11 @@ static Car *root;
 Car *newCar(int id)
 {
 	Car *car = malloc(sizeof(Car));
-    car->id = id;
-    car->laps = 0;
-    car->left = NULL;
-    car->right = NULL;
-    return (car);
+	car->id = id;
+	car->laps = 0;
+	car->left = NULL;
+	car->right = NULL;
+	return (car);
 }
 
 /**
@@ -30,24 +30,24 @@ Car *insertCar(Car *node, int id)
 	if (node == NULL)
 	{
 		printf("Car %d joined the race\n", id);
-        node = newCar(id);
-        return (node);
+		node = newCar(id);
+		return (node);
     }
 
-    if (id < node->id)
+	if (id < node->id)
 	{
-        node->left = insertCar(node->left, id);
-    }
+		node->left = insertCar(node->left, id);
+	}
 	else if (id > node->id)
 	{
-        node->right = insertCar(node->right, id);
-    }
+		node->right = insertCar(node->right, id);
+	}
 	else
 	{
-        node->laps++;
-    }
+		node->laps++;
+	}
 
-    return (node);
+	return (node);
 }
 
 /**
@@ -59,10 +59,10 @@ void print_race_state(Car *node)
 {
 	if (node != NULL)
 	{
-        print_race_state(node->left);
-        printf("Car %d [%d laps]\n", node->id, node->laps);
-        print_race_state(node->right);
-    }
+		print_race_state(node->left);
+		printf("Car %d [%d laps]\n", node->id, node->laps);
+		print_race_state(node->right);
+	}
 }
 
 /**
@@ -74,10 +74,10 @@ void free_car(Car *node)
 {
 	if (node != NULL)
 	{
-        free_car(node->left);
-        free_car(node->right);
-        free(node);
-    }
+		free_car(node->left);
+		free_car(node->right);
+		free(node);
+	}
 }
 
 /**
