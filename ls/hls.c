@@ -1,34 +1,12 @@
 #include "hls.h"
 
 /**
- * _strcmp - function that compares two strings
- * @s1: string 1
- * @s2: string 2
- * Return: success
- */
-
-int _strcmp(char *s1, char *s2)
-{
-	int i = 0;
-
-	while (s1[i] != '\0' && s2[i] != '\0')
-	{
-		if (s1[i] != s2[i])
-		{
-			return (s1[i] - s2[i]);
-		}
-		i++;
-	}
-	return (0);
-}
-
-
-/**
- * main - Entry point
+ * print_dir - prints the directory
  *
- * Return: 0 on success
+ * @dirname: name of directory
  */
-int main(void)
+
+void print_dir(const char *dirname)
 {
 	DIR *dir; /* pointer to directory stream */
 
@@ -37,11 +15,16 @@ int main(void)
 	 */
 	struct dirent *read;
 
-	dir = opendir("."); /* open current pointer */
-	if (dir == NULL) /* check if the directory opened without error */
+	dir = opendir(dirname); /* open current pointer */
+	if (!dir) /* check if not a directory */
 	{
-		perror("Error opening directory"); /* print error message */
-		return (1); /* return error */
+		print_error(dirname); /* call the error function */
+		exit(EXIT_FAILURE); /* exit */
+	}
+
+	if (_strcmp((char *)dirname, ".") != 0)
+	{
+		printf("%s:\n", dirname);
 	}
 
 	while ((read = readdir(dir)) != NULL) /* iterate through the directory */
@@ -58,6 +41,31 @@ int main(void)
 	closedir(dir); /* close the directory */
 
 	printf("\n"); /* print newline */
+}
 
-	return (0); /* return success */
+/**
+ * main - main function
+ *
+ * @argc: argument count
+ * @argv: argument vector
+ *
+ * Return: success
+ */
+
+int main(int argc, char **argv)
+{
+	int i;
+
+	if (argc == 1)
+	{
+		print_dir(".");
+	}
+	else
+	{
+		for (i = 1; i < argc; i++)
+		{
+			print_dir(argv[i]);
+		}
+	}
+	return (0); /* return success*/
 }
