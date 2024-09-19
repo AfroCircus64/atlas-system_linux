@@ -5,9 +5,10 @@
  *
  * @dirname: name of directory
  * @command: command name to be passed into print_error()
+ * @single_column: handler for the -1 flag
  */
 
-void print_dir(const char *dirname, const char *command)
+void print_dir(const char *dirname, const char *command, int single_column)
 {
 	DIR *dir; /* pointer to directory stream */
 
@@ -23,12 +24,7 @@ void print_dir(const char *dirname, const char *command)
 		exit(EXIT_FAILURE); /* exit */
 	}
 
-	/**
-	 * if (_strcmp((char *)dirname, ".") != 0)
-	 * {
-	 *	printf("%s:\n", dirname);
-	 * }
-	 */
+	printf("%s:\n", dirname);
 
 	while ((read = readdir(dir)) != NULL) /* iterate through the directory */
 	{
@@ -38,12 +34,34 @@ void print_dir(const char *dirname, const char *command)
 			continue;
 		}
 
-		printf("%s ", read->d_name); /* print the filename */
+		printf("%s%s", read->d_name, single_column ? "\n" : " ");
 	}
 
 	closedir(dir); /* close the directory */
 
 	printf("\n"); /* print newline */
+}
+
+/**
+ * handle_error - small helper func
+ *
+ * @command: command name
+ * @filename: name of the file
+ */
+void handle_error(const char *command, const char *filename)
+{
+	if (errno == ENOENT)
+	{
+		print_error(command, filename);
+	}
+	else if (errno == EACCES)
+	{
+		print_error(command, filename);
+	}
+	else
+	{
+		printf("%s\n", filename);
+	}
 }
 
 /**
@@ -58,38 +76,27 @@ void print_dir(const char *dirname, const char *command)
 int main(int argc, char **argv)
 {
 	int i;
-
+	int single_column = parse_flags(argc, argv);
 	const char *program_name = argv[0];
 
-	if (argc == 1)
+	if (argc == 1 || (argc == 2 && single_column))
 	{
-		print_dir(".", program_name);
+		print_dir(".", program_name, single_column);
 	}
 	else
 	{
-		for (i = 1; i < argc; i++)
+		for (i = 1 + (single_column ? 1 : 0); i < argc; i++)
 		{
 			DIR *dir = opendir(argv[i]);
 
 			if (dir != NULL)
 			{
-				print_dir(argv[i], program_name);
+				print_dir(argv[i], program_name, single_column);
 				closedir(dir);
 			}
 			else
 			{
-				if (errno == ENOENT)
-				{
-					print_error(program_name, argv[i]);
-				}
-				else if (errno == EACCES)
-				{
-					print_error(program_name, argv[i]);
-				}
-				else
-				{
-					printf("%s\n", argv[i]);
-				}
+				handle_error(program_name, argv[i]);
 			}
 		}
 	}

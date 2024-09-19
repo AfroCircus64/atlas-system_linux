@@ -2,8 +2,10 @@
 
 /**
  * _strcmp - function that compares two strings
+ *
  * @s1: string 1
  * @s2: string 2
+ *
  * Return: success
  */
 
@@ -46,4 +48,31 @@ void print_error(const char *command, const char *filename)
 		perror(filename);
 		break;
 	}
+}
+
+/**
+ * parse_flags - function to handle the flags
+ *
+ * @argc: argument count
+ * @argv: argument vector
+ *
+ * Return: success
+ */
+int parse_flags(int argc, char **argv)
+{
+	int index;
+	int single_column;
+
+	for (index = 1; index < argc; index++)
+	{
+		if (argv[index][0] == '-' && argv[index][1] == '1' && argv[index][2] == '\0')
+		{
+			single_column = 1;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return (single_column);
 }
