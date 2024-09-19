@@ -25,20 +25,21 @@ int _strcmp(char *s1, char *s2)
 /**
  * print_error - error handling function
  *
+ * @command: command name that is passed in
  * @filename: name of file
  */
 
-void print_error(const char *filename)
+void print_error(const char *command, const char *filename)
 {
 	switch (errno)
 	{
 	case ENOENT:
 		fprintf(stderr,
-		 "./hls cannot access %s: No such file or directory\n", filename);
+		 "%s: cannot access %s: No such file or directory\n", command, filename);
 		break;
 	case EACCES:
 		fprintf(stderr,
-		 "./hls cannot open directory %s: Permission denied\n", filename);
+		 "%s: cannot open directory %s: Permission denied\n", command,  filename);
 		break;
 
 	default:

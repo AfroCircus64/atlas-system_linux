@@ -4,9 +4,10 @@
  * print_dir - prints the directory
  *
  * @dirname: name of directory
+ * @command: command name to be passed into print_error()
  */
 
-void print_dir(const char *dirname)
+void print_dir(const char *dirname, const char *command)
 {
 	DIR *dir; /* pointer to directory stream */
 
@@ -18,7 +19,7 @@ void print_dir(const char *dirname)
 	dir = opendir(dirname); /* open current pointer */
 	if (!dir) /* check if not a directory */
 	{
-		print_error(dirname); /* call the error function */
+		print_error(command, dirname); /* call the error function */
 		exit(EXIT_FAILURE); /* exit */
 	}
 
@@ -58,9 +59,11 @@ int main(int argc, char **argv)
 {
 	int i;
 
+	const char *program_name = argv[0];
+
 	if (argc == 1)
 	{
-		print_dir(".");
+		print_dir(".", program_name);
 	}
 	else
 	{
@@ -70,14 +73,18 @@ int main(int argc, char **argv)
 
 			if (dir != NULL)
 			{
-				print_dir(argv[i]);
+				print_dir(argv[i], program_name);
 				closedir(dir);
 			}
 			else
 			{
 				if (errno == ENOENT)
 				{
-					print_error(argv[i]);
+					print_error(program_name, argv[i]);
+				}
+				else if (errno == EACCES)
+				{
+					print_error(program_name, argv[i]);
 				}
 				else
 				{

@@ -10,8 +10,8 @@
 /* prototypes will go here */
 int main(int argc, char **argv);
 int _strcmp(char *s1, char *s2);
-void print_error(const char *filename);
-void print_dir(const char *dirname);
+void print_error(const char *command, const char *filename);
+void print_dir(const char *dirname, const char *command);
 
 
 #endif /* HLS_H */
