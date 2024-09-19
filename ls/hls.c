@@ -22,10 +22,12 @@ void print_dir(const char *dirname)
 		exit(EXIT_FAILURE); /* exit */
 	}
 
-	if (_strcmp((char *)dirname, ".") != 0)
-	{
-		printf("%s:\n", dirname);
-	}
+	/**
+	 * if (_strcmp((char *)dirname, ".") != 0)
+	 * {
+	 *	printf("%s:\n", dirname);
+	 * }
+	 */
 
 	while ((read = readdir(dir)) != NULL) /* iterate through the directory */
 	{
