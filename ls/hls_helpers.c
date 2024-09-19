@@ -40,9 +40,6 @@ void print_error(const char *filename)
 		fprintf(stderr,
 		 "./hls cannot open directory %s: Permission denied\n", filename);
 		break;
-	case ENOTDIR:
-		fprintf(stderr, "./hls cd: %s: Not a directory\n", filename);
-		break;
 
 	default:
 		perror(filename);
