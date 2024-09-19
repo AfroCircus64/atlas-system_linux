@@ -75,7 +75,10 @@ int main(int argc, char **argv)
 			}
 			else
 			{
-				printf("%s\n", argv[i]);
+				if (errno != ENOENT)
+				{
+					printf("%s\n", argv[i]);
+				}
 			}
 		}
 	}
