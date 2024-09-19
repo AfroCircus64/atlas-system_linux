@@ -66,7 +66,17 @@ int main(int argc, char **argv)
 	{
 		for (i = 1; i < argc; i++)
 		{
-			print_dir(argv[i]);
+			DIR *dir = opendir(argv[i]);
+
+			if (dir != NULL)
+			{
+				print_dir(argv[i]);
+				closedir(dir);
+			}
+			else
+			{
+				printf("%s\n", argv[i]);
+			}
 		}
 	}
 	return (0); /* return success*/
