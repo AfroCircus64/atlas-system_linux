@@ -25,6 +25,24 @@ int _strcmp(char *s1, char *s2)
 }
 
 /**
+ * _strlen - returns the length of a string
+ * @s: parameter
+ * Return: Always 0
+ */
+
+int _strlen(char *s)
+{
+	int i;
+	int length = 0;
+
+	for (i = 0; s[i] != '\0'; i++)
+	{
+		length++;
+	}
+	return (length);
+}
+
+/**
  * print_error - error handling function
  *
  * @command: command name that is passed in
@@ -51,28 +69,47 @@ void print_error(const char *command, const char *filename)
 }
 
 /**
- * parse_flags - function to handle the flags
+ * parse_options - func to parse options
  *
  * @argc: argument count
  * @argv: argument vector
  *
- * Return: success
+ * Return: options
  */
-int parse_flags(int argc, char **argv)
+Options parse_options(int argc, char **argv)
 {
-	int index;
-	int single_column;
+	Options opts = {SHOW_NONE, 0};
 
-	for (index = 1; index < argc; index++)
+	int opt_index = 1;
+
+	while (opt_index < argc && argv[opt_index][0] == '-')
 	{
-		if (argv[index][0] == '-' && argv[index][1] == '1' && argv[index][2] == '\0')
+		if (_strcmp(argv[opt_index], "-1") == 0)
 		{
-			single_column = 1;
+			opts.show_all = SHOW_ALL;
+		}
+		else if (_strcmp(argv[opt_index], "-l") == 0)
+		{
+			opts.long_format = 1;
+		}
+		else if (_strcmp(argv[opt_index],
+		 "-a") == 0 || _strcmp(argv[opt_index], "--all") == 0)
+		{
+			opts.show_all = SHOW_ALL;
+		}
+		else if (_strcmp(argv[opt_index],
+		 "-A") == 0 || _strcmp(argv[opt_index], "--almost-all") == 0)
+		{
+			opts.show_all = SHOW_ALMOST_ALL;
 		}
 		else
 		{
-			break;
+			fprintf(stderr, "%s: invalid option -- '%c'\n",
+			 argv[0], argv[opt_index][1]);
+			exit(EXIT_FAILURE);
 		}
+		opt_index++;
 	}
-	return (single_column);
+
+	return (opts);
 }

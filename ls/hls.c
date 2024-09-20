@@ -5,10 +5,10 @@
  *
  * @dirname: name of directory
  * @command: command name to be passed into print_error()
- * @single_column: handler for the -1 flag
+ * @opts: options
  */
 
-void print_dir(const char *dirname, const char *command, int single_column)
+void print_dir(const char *dirname, const char *command, Options opts)
 {
 	DIR *dir; /* pointer to directory stream */
 
@@ -24,17 +24,31 @@ void print_dir(const char *dirname, const char *command, int single_column)
 		exit(EXIT_FAILURE); /* exit */
 	}
 
-	printf("%s:\n", dirname);
+	if (opts.long_format)
+	{
+		printf("%s:\n", dirname);
+	}
 
 	while ((read = readdir(dir)) != NULL) /* iterate through the directory */
 	{
-		/* skip the current and parent directories */
-		if (_strcmp(read->d_name, ".") == 0 || _strcmp(read->d_name, "..") == 0)
+		if (opts.show_all == SHOW_NONE && read->d_name[0] == '.')
+		{
+			continue;
+		}
+		if (opts.show_all == SHOW_ALMOST_ALL && (_strcmp(read->d_name,
+		 ".") == 0 || _strcmp(read->d_name, "..") == 0))
 		{
 			continue;
 		}
 
-		printf("%s%s", read->d_name, single_column ? "\n" : " ");
+		if (opts.long_format)
+		{
+			print_long_format(read, dirname);
+		}
+		else
+		{
+			printf("%s ", read->d_name);
+		}
 	}
 
 	closedir(dir); /* close the directory */
@@ -76,27 +90,36 @@ void handle_error(const char *command, const char *filename)
 int main(int argc, char **argv)
 {
 	int i;
-	int single_column = parse_flags(argc, argv);
+	Options opts = parse_options(argc, argv);
 	const char *program_name = argv[0];
 
-	if (argc == 1 || (argc == 2 && single_column))
+	if (argc == 1 || (argc == 2 && opts.show_all == SHOW_NONE))
 	{
-		print_dir(".", program_name, single_column);
+		print_dir(".", program_name, opts);
 	}
 	else
 	{
-		for (i = 1 + (single_column ? 1 : 0); i < argc; i++)
+		for (i = 1; i < argc; i++)
 		{
-			DIR *dir = opendir(argv[i]);
+			if (argv[i][0] != '-')
+			{
+				DIR *dir = opendir(argv[i]);
 
-			if (dir != NULL)
-			{
-				print_dir(argv[i], program_name, single_column);
-				closedir(dir);
-			}
-			else
-			{
-				handle_error(program_name, argv[i]);
+				if (dir != NULL)
+				{
+					if (opts.long_format)
+					{
+						printf("%s:\n", argv[i]);
+					}
+
+					print_dir(argv[i], program_name, opts);
+
+					closedir(dir);
+				}
+				else
+				{
+					handle_error(program_name, argv[i]);
+				}
 			}
 		}
 	}
