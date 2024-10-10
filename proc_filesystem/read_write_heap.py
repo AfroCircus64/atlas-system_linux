@@ -59,6 +59,10 @@ def replace_str(
 
     mem_file = "/proc/{}/mem".format(pid)
 
+    if len(r_string) > len(s_string):
+        print("Error: Strings are different lengths")
+        exit(1)
+
     try:
         with open(mem_file, 'rb+') as file:
             file.seek(h_start)
