@@ -18,7 +18,6 @@ def arg_parser():
         r_string = sys.argv[3]
     else:
         r_string = ""
-
     
     return pid, s_string, r_string
 
