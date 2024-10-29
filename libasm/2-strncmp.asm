@@ -24,26 +24,26 @@ section .text
 global asm_strncmp
 
 asm_strncmp:
-    test rdx, rdx
-    jz .equal
+	test rdx, rdx
+	jz .equal
 
 .compare_loop:
-    movzx rax, byte [rdi]
-    movzx rbx, byte [rsi]
-    cmp al, bl
-    jne .not_equal
-    test al, al
-    jz .equal
-    dec rdx
-    jz .equal
-    inc rdi
-    inc rsi
-    jmp .compare_loop
+	movzx rax, byte [rdi]
+	movzx rbx, byte [rsi]
+	cmp al, bl
+	jne .not_equal
+	test al, al
+	jz .equal
+	dec rdx
+	jz .equal
+	inc rdi
+	inc rsi
+	jmp .compare_loop
 
 .not_equal:
-    sub eax, ebx
-    ret
+	sub eax, ebx
+	ret
 
 .equal:
-    xor eax, eax
-    ret
+	xor eax, eax
+	ret
