@@ -37,10 +37,10 @@ asm_strcmp:
 
 	; Move to next byte in s1
 	inc rdi
-	
+
 	; Move to next byte in s2
 	inc rsi
-	
+
 	; Repeat the loop
 	jmp .loop
 
