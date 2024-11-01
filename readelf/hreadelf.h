@@ -7,11 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <elf.h>
 
 int main(int argc, char *argv[]);
-static int check_file(FILE *file);
-static unsigned char *read_elf_header(const char *filename, size_t *size);
-void process_elf_header(unsigned char *header);
+void print_elf_header(const char *filename);
+void print_section_headers(const char *filename);
 
 
 #endif
