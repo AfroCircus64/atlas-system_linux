@@ -39,10 +39,20 @@ asm_strncasecmp:
     jz .end_of_string
     test  cl, cl
     jz .end_of_string
-    call .tolower
+    cmp al, 'A'
+    jb .tolower1_end
+    cmp al, 'Z'
+    ja .tolower1_end
+    add al, 32
+.tolower1_end:
     movzx eax, al
-    call .tolower
-    movzx ecx, al
+    cmp cl, 'A'
+    jb .tolower2_end
+    cmp cl, 'Z'
+    ja .tolower2_end
+    add cl, 32
+.tolower2_end:
+    movzx ecx, cl
     cmp eax, ecx
     jne .return_difference
     inc rdi
@@ -70,13 +80,4 @@ asm_strncasecmp:
     test cl, cl
     jz .return_zero
     sub eax, ecx
-    ret
-
-.tolower:
-    cmp al, 'A'
-    jb .tolower_end
-    cmp al, 'Z'
-    ja .tolower_end
-    add al, 32
-.tolower_end:
     ret
