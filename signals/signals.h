@@ -18,5 +18,8 @@ void (*current_handler_sigaction(void))(int);
 int trace_signal_sender(void);
 void sigquit_handler(int signo, siginfo_t *info, void *context);
 int description(int argc, char *argv[]);
+int main(void);
+void sigint_handler(int signum);
+
 
 #endif
