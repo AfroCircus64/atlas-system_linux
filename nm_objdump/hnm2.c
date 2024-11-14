@@ -328,7 +328,6 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 				uint64_t value = symtab[j].st_value;
 				char type;
 				unsigned char bind = ELF64_ST_BIND(symtab[j].st_info);
-				unsigned char type_val = ELF64_ST_TYPE(symtab[j].st_info);
 
 				if (is_big_endian)
 				{
