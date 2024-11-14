@@ -173,9 +173,13 @@ void print_symbols_32(int fd, Elf32_Ehdr *ehdr, int is_big_endian)
 							type = ELF32_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
 							break;
 						case STB_GLOBAL:
-							if (strcmp(name, "__progname") == 0)
+							if (strcmp(name, "__progname") == 0 || strcmp(name, "__ps_strings") == 0)
 							{
 								type = 'D';
+							}
+							else if (strcmp(name, "_start") == 0 || strcmp(name, "__start") == 0)
+							{
+                        		type = 'T';
 							}
 							else
 							{
@@ -328,9 +332,13 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 							type = ELF64_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
 							break;
 						case STB_GLOBAL:
-							if (strcmp(name, "__progname") == 0)
+							if (strcmp(name, "__progname") == 0 || strcmp(name, "__ps_strings") == 0)
 							{
 								type = 'D';
+							}
+							else if (strcmp(name, "_start") == 0 || strcmp(name, "__start") == 0)
+							{
+                        		type = 'T';
 							}
 							else
 							{
