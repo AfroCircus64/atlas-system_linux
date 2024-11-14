@@ -211,7 +211,7 @@ void print_symbols_32(int fd, Elf32_Ehdr *ehdr, int is_big_endian)
 						}
 						break;
 					default:
-						type = '?';
+						type = 't';
 						break;
 				}
 
@@ -378,7 +378,7 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 						type = (ELF64_ST_TYPE(symtab[j].st_info) == STT_SECTION) ? 'N' : 't';
 						break;
 					default:
-						type = '?';
+						type = 't';
 						break;
 				}
 
