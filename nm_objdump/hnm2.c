@@ -150,27 +150,56 @@ void print_symbols_32(int fd, Elf32_Ehdr *ehdr, int is_big_endian)
 					value = swap32(value);
 				}
 
-				switch (ELF32_ST_BIND(symtab[j].st_info))
+				if (symtab[j].st_shndx == SHN_UNDEF || symtab[j].st_shndx >= ehdr->e_shnum)
 				{
-					case STB_LOCAL:
-						type = ELF32_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
-						break;
-					case STB_GLOBAL:
-						type = ELF32_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
-							ELF32_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
-						break;
-					case STB_WEAK:
-						type = 'W';
-						break;
-					default:
-						type = '?';
-						break;
+					type = 'U';
+				}
+				else
+				{
+					switch (ELF32_ST_BIND(symtab[j].st_info))
+					{
+						case STB_LOCAL:
+							type = ELF32_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
+							break;
+						case STB_GLOBAL:
+							type = ELF32_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
+								ELF32_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
+							break;
+						case STB_WEAK:
+							type = 'W';
+							break;
+						default:
+							type = '?';
+							break;
+					}
+
+					const char *name = &strtab[symtab[j].st_name];
+
+					if (strcmp(name, "_DYNAMIC") == 0 ||
+						strcmp(name, "_etext") == 0 ||
+						strcmp(name, "__bss_start") == 0 ||
+						strcmp(name, "_edata") == 0 ||
+						strcmp(name, "_GLOBAL_OFFSET_TABLE_") == 0 ||
+						strcmp(name, "_end") == 0)
+					{
+						type = 'A';
+					}
 				}
 
 				const char *name = &strtab[symtab[j].st_name];
-				if (*name != '\0')
+
+				if (*name != '\0' &&
+					!(ELF32_ST_BIND(symtab[j].st_info) == STB_LOCAL &&
+					ELF32_ST_TYPE(symtab[j].st_info) == STT_FILE))
 				{
-					printf("%08x %c %s\n", value, type, name);
+					if (type == 'U')
+					{
+						printf("         U %s\n", name);
+					}
+					else
+					{
+						printf("%08x %c %s\n", value, type, name);
+					}
 				}
 			}
 
@@ -272,27 +301,56 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 					value = swap64(value);
 				}
 
-				switch (ELF64_ST_BIND(symtab[j].st_info))
+				if (symtab[j].st_shndx == SHN_UNDEF || symtab[j].st_shndx >= ehdr->e_shnum)
 				{
-					case STB_LOCAL:
-						type = ELF64_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
-						break;
-					case STB_GLOBAL:
-						type = ELF64_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
-							   ELF64_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
-						break;
-					case STB_WEAK:
-						type = 'W';
-						break;
-					default:
-						type = '?';
-						break;
+					type = 'U';
+				}
+				else
+				{
+					switch (ELF64_ST_BIND(symtab[j].st_info))
+					{
+						case STB_LOCAL:
+							type = ELF64_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
+							break;
+						case STB_GLOBAL:
+							type = ELF64_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
+								ELF64_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
+							break;
+						case STB_WEAK:
+							type = 'W';
+							break;
+						default:
+							type = '?';
+							break;
+					}
+
+					const char *name = &strtab[symtab[j].st_name];
+
+					if (strcmp(name, "_DYNAMIC") == 0 ||
+						strcmp(name, "_etext") == 0 ||
+						strcmp(name, "__bss_start") == 0 ||
+						strcmp(name, "_edata") == 0 ||
+						strcmp(name, "_GLOBAL_OFFSET_TABLE_") == 0 ||
+						strcmp(name, "_end") == 0)
+					{
+						type = 'A';
+					}
 				}
 
 				const char *name = &strtab[symtab[j].st_name];
-				if (*name != '\0')
+
+				if (*name != '\0' &&
+					!(ELF64_ST_BIND(symtab[j].st_info) == STB_LOCAL &&
+					ELF64_ST_TYPE(symtab[j].st_info) == STT_FILE))
 				{
-					printf("%016lx %c %s\n", value, type, name);
+					if (type == 'U')
+					{
+						printf("         U %s\n", name);
+					}
+					else
+					{
+						printf("%016lx %c %s\n", value, type, name);
+					}
 				}
 			}
 
