@@ -144,6 +144,8 @@ void print_symbols_32(int fd, Elf32_Ehdr *ehdr, int is_big_endian)
 			{
 				uint32_t value = symtab[j].st_value;
 				char type;
+				unsigned char bind = ELF32_ST_BIND(symtab[j].st_info);
+				unsigned char type_val = ELF32_ST_TYPE(symtab[j].st_info);
 
 				if (is_big_endian)
 				{
@@ -152,48 +154,70 @@ void print_symbols_32(int fd, Elf32_Ehdr *ehdr, int is_big_endian)
 
 				const char *name = &strtab[symtab[j].st_name];
 
-				if (strcmp(name, "_DYNAMIC") == 0 ||
-					strcmp(name, "_etext") == 0 ||
-					strcmp(name, "__bss_start") == 0 ||
-					strcmp(name, "_edata") == 0 ||
-					strcmp(name, "_GLOBAL_OFFSET_TABLE_") == 0 ||
-					strcmp(name, "_end") == 0)
+				switch (bind)
 				{
-					type = 'A';
+					case STB_GNU_UNIQUE:
+						type = 'u';
+						break;
+					case STB_WEAK:
+						if (type_val == STT_OBJECT)
+						{
+							type = (symtab[j].st_shndx == SHN_UNDEF) ? 'v' : 'V';
+						}
+						else
+						{
+							type = (symtab[j].st_shndx == SHN_UNDEF) ? 'w' : 'W';
+						}
+						break;
+					case STB_GLOBAL:
+						switch (symtab[j].st_shndx)
+						{
+							case SHN_UNDEF:
+								type = 'U';
+								break;
+							case SHN_ABS:
+								type = 'A';
+								break;
+							case SHN_COMMON:
+								type = 'C';
+								break;
+							default:
+								switch (shdrs[symtab[j].st_shndx].sh_type)
+								{
+									case SHT_NOBITS:
+										if (shdrs[symtab[j].st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+											type = 'B';
+										else
+											type = 'T';
+										break;
+									case SHT_PROGBITS:
+										if (shdrs[symtab[j].st_shndx].sh_flags == SHF_ALLOC)
+											type = 'R';
+										else if (shdrs[symtab[j].st_shndx].sh_flags == (SHF_ALLOC | SHF_WRITE))
+											type = 'D';
+										else if (shdrs[symtab[j].st_shndx].sh_flags == (SHF_ALLOC | SHF_EXECINSTR))
+											type = 'T';
+										else
+											type = 'T';
+										break;
+									case SHT_DYNAMIC:
+										type = 'D';
+										break;
+									default:
+										type = 'T';
+										break;
+								}
+								break;
+						}
+						break;
+					default:
+						type = '?';
+						break;
 				}
-				else if (symtab[j].st_shndx == SHN_UNDEF || symtab[j].st_shndx >= ehdr->e_shnum)
+
+				if (bind == STB_LOCAL && type != '?')
 				{
-					type = 'U';
-				}
-				else
-				{
-					switch (ELF32_ST_BIND(symtab[j].st_info))
-					{
-						case STB_LOCAL:
-							type = ELF32_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
-							break;
-						case STB_GLOBAL:
-							if (strcmp(name, "__progname") == 0 || strcmp(name, "__ps_strings") == 0)
-							{
-								type = 'D';
-							}
-							else if (strcmp(name, "_start") == 0 || strcmp(name, "__start") == 0)
-							{
-                        		type = 'T';
-							}
-							else
-							{
-								type = ELF32_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
-									ELF32_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
-							}
-							break;
-						case STB_WEAK:
-							type = 'W';
-							break;
-						default:
-							type = '?';
-							break;
-					}
+					type += 32;
 				}
 
 				if (*name != '\0' &&
@@ -303,6 +327,8 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 			{
 				uint64_t value = symtab[j].st_value;
 				char type;
+				unsigned char bind = ELF64_ST_BIND(symtab[j].st_info);
+				unsigned char type_val = ELF64_ST_TYPE(symtab[j].st_info);
 
 				if (is_big_endian)
 				{
@@ -311,49 +337,54 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 
 				const char *name = &strtab[symtab[j].st_name];
 
-				if (strcmp(name, "_DYNAMIC") == 0 ||
-					strcmp(name, "_etext") == 0 ||
-					strcmp(name, "__bss_start") == 0 ||
-					strcmp(name, "_edata") == 0 ||
-					strcmp(name, "_GLOBAL_OFFSET_TABLE_") == 0 ||
-					strcmp(name, "_end") == 0)
+				switch (bind)
 				{
-					type = 'A';
-				}
-				else if (symtab[j].st_shndx == SHN_UNDEF || symtab[j].st_shndx >= ehdr->e_shnum)
-				{
-					type = 'U';
-				}
-				else
-				{
-					switch (ELF64_ST_BIND(symtab[j].st_info))
-					{
-						case STB_LOCAL:
-							type = ELF64_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
-							break;
-						case STB_GLOBAL:
-							if (strcmp(name, "__progname") == 0 || strcmp(name, "__ps_strings") == 0)
+					case STB_GNU_UNIQUE:
+						type = 'u';
+						break;
+					case STB_WEAK:
+						type = 'W';
+						break;
+					case STB_GLOBAL:
+						if (strcmp(name, "_DYNAMIC") == 0 ||
+							strcmp(name, "_etext") == 0 ||
+							strcmp(name, "__bss_start") == 0 ||
+							strcmp(name, "_edata") == 0 ||
+							strcmp(name, "_GLOBAL_OFFSET_TABLE_") == 0 ||
+							strcmp(name, "_end") == 0)
+						{
+							type = 'A';
+						}
+						else if (symtab[j].st_shndx == SHN_UNDEF || symtab[j].st_shndx >= ehdr->e_shnum)
+						{
+							type = 'U';
+						}
+						else
+						{
+							switch (ELF64_ST_TYPE(symtab[j].st_info))
 							{
-								type = 'D';
+								case STT_OBJECT:
+									type = 'B';
+									break;
+								case STT_FUNC:
+									type = 'T';
+									break;
+								default:
+									type = 'D';
+									break;
 							}
-							else if (strcmp(name, "_start") == 0 || strcmp(name, "__start") == 0)
-							{
-                        		type = 'T';
-							}
-							else
-							{
-								type = ELF64_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
-									ELF64_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
-							}
-							break;
-						case STB_WEAK:
-							type = 'W';
-							break;
-						default:
-							type = '?';
-							break;
-					}
+						}
+						break;
+					case STB_LOCAL:
+						type = (ELF64_ST_TYPE(symtab[j].st_info) == STT_SECTION) ? 'N' : 't';
+						break;
+					default:
+						type = '?';
+						break;
 				}
+
+				if (bind == STB_LOCAL && type != '?')
+					type += 32;
 
 				if (*name != '\0' &&
 					!(ELF64_ST_BIND(symtab[j].st_info) == STB_LOCAL &&
