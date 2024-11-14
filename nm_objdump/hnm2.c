@@ -143,12 +143,35 @@ void print_symbols_32(int fd, Elf32_Ehdr *ehdr, int is_big_endian)
 			for (size_t j = 0; j < num_symbols; j++)
 			{
 				uint32_t value = symtab[j].st_value;
+				char type;
 
 				if (is_big_endian)
 				{
 					value = swap32(value);
 				}
-				printf("%08x %c %s\n", value, ELF32_ST_TYPE(symtab[j].st_info), &strtab[symtab[j].st_name]);
+
+				switch (ELF32_ST_BIND(symtab[j].st_info))
+				{
+					case STB_LOCAL:
+						type = ELF32_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
+						break;
+					case STB_GLOBAL:
+						type = ELF32_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
+							ELF32_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
+						break;
+					case STB_WEAK:
+						type = 'W';
+						break;
+					default:
+						type = '?';
+						break;
+				}
+
+				const char *name = &strtab[symtab[j].st_name];
+				if (*name != '\0')
+				{
+					printf("%08x %c %s\n", value, type, name);
+				}
 			}
 
 			free(strtab);
@@ -242,12 +265,35 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 			for (size_t j = 0; j < num_symbols; j++)
 			{
 				uint64_t value = symtab[j].st_value;
+				char type;
 
 				if (is_big_endian)
 				{
 					value = swap64(value);
 				}
-				printf("%016lx %c %s\n", value, ELF64_ST_TYPE(symtab[j].st_info), &strtab[symtab[j].st_name]);
+
+				switch (ELF64_ST_BIND(symtab[j].st_info))
+				{
+					case STB_LOCAL:
+						type = ELF64_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
+						break;
+					case STB_GLOBAL:
+						type = ELF64_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
+							   ELF64_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
+						break;
+					case STB_WEAK:
+						type = 'W';
+						break;
+					default:
+						type = '?';
+						break;
+				}
+
+				const char *name = &strtab[symtab[j].st_name];
+				if (*name != '\0')
+				{
+					printf("%016lx %c %s\n", value, type, name);
+				}
 			}
 
 			free(strtab);
