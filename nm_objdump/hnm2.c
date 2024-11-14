@@ -173,8 +173,15 @@ void print_symbols_32(int fd, Elf32_Ehdr *ehdr, int is_big_endian)
 							type = ELF32_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
 							break;
 						case STB_GLOBAL:
-							type = ELF32_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
-								ELF32_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
+							if (strcmp(name, "__progname") == 0)
+							{
+								type = 'D';
+							}
+							else
+							{
+								type = ELF32_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
+									ELF32_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
+							}
 							break;
 						case STB_WEAK:
 							type = 'W';
@@ -321,8 +328,15 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 							type = ELF64_ST_TYPE(symtab[j].st_info) == STT_SECTION ? 'N' : 't';
 							break;
 						case STB_GLOBAL:
-							type = ELF64_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
-								ELF64_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
+							if (strcmp(name, "__progname") == 0)
+							{
+								type = 'D';
+							}
+							else
+							{
+								type = ELF64_ST_TYPE(symtab[j].st_info) == STT_OBJECT ? 'B' :
+									ELF64_ST_TYPE(symtab[j].st_info) == STT_FUNC ? 'T' : 'D';
+							}
 							break;
 						case STB_WEAK:
 							type = 'W';
