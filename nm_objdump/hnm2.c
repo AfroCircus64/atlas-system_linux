@@ -211,13 +211,8 @@ void print_symbols_32(int fd, Elf32_Ehdr *ehdr, int is_big_endian)
 						}
 						break;
 					default:
-						type = 't';
+						type = '?';
 						break;
-				}
-
-				if (bind == STB_LOCAL && type != '?')
-				{
-					type += 32;
 				}
 
 				if (*name != '\0' &&
@@ -378,12 +373,9 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 						type = (ELF64_ST_TYPE(symtab[j].st_info) == STT_SECTION) ? 'N' : 't';
 						break;
 					default:
-						type = 't';
+						type = '?';
 						break;
 				}
-
-				if (bind == STB_LOCAL && type != '?')
-					type += 32;
 
 				if (*name != '\0' &&
 					!(ELF64_ST_BIND(symtab[j].st_info) == STB_LOCAL &&
