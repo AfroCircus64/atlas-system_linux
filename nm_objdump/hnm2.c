@@ -150,7 +150,18 @@ void print_symbols_32(int fd, Elf32_Ehdr *ehdr, int is_big_endian)
 					value = swap32(value);
 				}
 
-				if (symtab[j].st_shndx == SHN_UNDEF || symtab[j].st_shndx >= ehdr->e_shnum)
+				const char *name = &strtab[symtab[j].st_name];
+
+				if (strcmp(name, "_DYNAMIC") == 0 ||
+					strcmp(name, "_etext") == 0 ||
+					strcmp(name, "__bss_start") == 0 ||
+					strcmp(name, "_edata") == 0 ||
+					strcmp(name, "_GLOBAL_OFFSET_TABLE_") == 0 ||
+					strcmp(name, "_end") == 0)
+				{
+					type = 'A';
+				}
+				else if (symtab[j].st_shndx == SHN_UNDEF || symtab[j].st_shndx >= ehdr->e_shnum)
 				{
 					type = 'U';
 				}
@@ -172,21 +183,7 @@ void print_symbols_32(int fd, Elf32_Ehdr *ehdr, int is_big_endian)
 							type = '?';
 							break;
 					}
-
-					const char *name = &strtab[symtab[j].st_name];
-
-					if (strcmp(name, "_DYNAMIC") == 0 ||
-						strcmp(name, "_etext") == 0 ||
-						strcmp(name, "__bss_start") == 0 ||
-						strcmp(name, "_edata") == 0 ||
-						strcmp(name, "_GLOBAL_OFFSET_TABLE_") == 0 ||
-						strcmp(name, "_end") == 0)
-					{
-						type = 'A';
-					}
 				}
-
-				const char *name = &strtab[symtab[j].st_name];
 
 				if (*name != '\0' &&
 					!(ELF32_ST_BIND(symtab[j].st_info) == STB_LOCAL &&
@@ -301,7 +298,18 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 					value = swap64(value);
 				}
 
-				if (symtab[j].st_shndx == SHN_UNDEF || symtab[j].st_shndx >= ehdr->e_shnum)
+				const char *name = &strtab[symtab[j].st_name];
+
+				if (strcmp(name, "_DYNAMIC") == 0 ||
+					strcmp(name, "_etext") == 0 ||
+					strcmp(name, "__bss_start") == 0 ||
+					strcmp(name, "_edata") == 0 ||
+					strcmp(name, "_GLOBAL_OFFSET_TABLE_") == 0 ||
+					strcmp(name, "_end") == 0)
+				{
+					type = 'A';
+				}
+				else if (symtab[j].st_shndx == SHN_UNDEF || symtab[j].st_shndx >= ehdr->e_shnum)
 				{
 					type = 'U';
 				}
@@ -323,21 +331,7 @@ void print_symbols_64(int fd, Elf64_Ehdr *ehdr, int is_big_endian)
 							type = '?';
 							break;
 					}
-
-					const char *name = &strtab[symtab[j].st_name];
-
-					if (strcmp(name, "_DYNAMIC") == 0 ||
-						strcmp(name, "_etext") == 0 ||
-						strcmp(name, "__bss_start") == 0 ||
-						strcmp(name, "_edata") == 0 ||
-						strcmp(name, "_GLOBAL_OFFSET_TABLE_") == 0 ||
-						strcmp(name, "_end") == 0)
-					{
-						type = 'A';
-					}
 				}
-
-				const char *name = &strtab[symtab[j].st_name];
 
 				if (*name != '\0' &&
 					!(ELF64_ST_BIND(symtab[j].st_info) == STB_LOCAL &&
