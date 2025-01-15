@@ -73,7 +73,9 @@ int parent_func(pid_t child)
 			return (1);
 		}
 
-		printf("%lld\n", regs.orig_rax);
+		const char *syscall_name = get_syscall_name(regs.orig_rax);
+
+		printf("%s\n", syscall_name);
 
 		if (ptrace(PTRACE_SYSCALL, child, NULL, NULL) == -1)
 		{
@@ -83,4 +85,23 @@ int parent_func(pid_t child)
 	}
 
 	return (0);
+}
+
+/**
+ * get_syscall_name - Get the name of a syscall from its number
+ *
+ * @syscall_num: The syscall number
+ *
+ * Return: The name of the syscall, or "unknown" if not found
+ */
+const char *get_syscall_name(long syscall_num)
+{
+	for (size_t i = 0; i < sizeof(syscalls_64_g) / sizeof(syscalls_64_g[0]); i++)
+	{
+		if (syscalls_64_g[i].nr == syscall_num)
+		{
+			return (syscalls_64_g[i].name);
+		}
+	}
+	return ("unknown");
 }
