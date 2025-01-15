@@ -10,4 +10,6 @@
 #include <sys/user.h>
 #include "syscalls.h"
 
+int parent_func(pid_t);
+
 #endif
