@@ -94,7 +94,7 @@ int parent_func(pid_t child)
  *
  * Return: The name of the syscall, or "unknown" if not found
  */
-const char *get_syscall_name(int syscall_num)
+const char *get_syscall_name(size_t syscall_num)
 {
 	for (size_t i = 0; i < sizeof(syscalls_64_g) / sizeof(syscalls_64_g[0]); i++)
 	{
@@ -103,5 +103,5 @@ const char *get_syscall_name(int syscall_num)
 			return (syscalls_64_g[i].name);
 		}
 	}
-	return ("unknown");
+	return (NULL);
 }
