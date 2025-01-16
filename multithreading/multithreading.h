@@ -75,5 +75,9 @@ typedef struct blur_portion_s
 void *thread_entry(void *arg);
 int tprintf(const char *format, ...);
 list_t *prime_factors(char const *s);
+task_t *create_task(task_entry_t entry, void *param);
+void destroy_task(task_t *task);
+void *exec_tasks(list_t const *tasks);
+
 
 #endif
