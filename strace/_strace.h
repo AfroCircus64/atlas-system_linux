@@ -11,6 +11,6 @@
 #include "syscalls.h"
 
 int parent_func(pid_t);
-void *get_syscall_name(unsigned long syscall_num);
+const char *get_syscall_name(int syscall_num);
 
 #endif
